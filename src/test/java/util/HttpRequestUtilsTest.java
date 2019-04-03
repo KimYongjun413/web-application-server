@@ -10,6 +10,12 @@ import org.junit.Test;
 import util.HttpRequestUtils.Pair;
 
 public class HttpRequestUtilsTest {
+
+    @Test
+    public void getUrl() {
+        assertEquals("/index.html", HttpRequestUtils.getUrl("GET /index.html HTTP/1.1"));
+    }
+
     @Test
     public void parseQueryString() {
         String queryString = "userId=javajigi";
