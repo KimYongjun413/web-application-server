@@ -27,8 +27,7 @@ public class RequestHandler extends Thread {
             // http://localhost:8080/index.html로 접속했을 때 webapp 디렉토리의 index.html 파일을 읽어 클라이언트에 응답한다.
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
             String line = bufferedReader.readLine();
-            HttpRequestUtils httpRequestUtils = new HttpRequestUtils();
-            String url = httpRequestUtils.getUrl(line);
+            String url = HttpRequestUtils.getUrl(line);
             byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
 
             while(line != null && !"".equals(line)) {
