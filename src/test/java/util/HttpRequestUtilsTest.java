@@ -5,12 +5,21 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
+import model.User;
 import org.junit.Test;
 
 import util.HttpRequestUtils.Pair;
 
 public class HttpRequestUtilsTest {
 
+    /*
+    @Test
+    public void setUser() {
+        String queryString = "GET /user/create?userId=TEST&password=1234&name=kim&email=kimyongjun@email.com HTTP/1.1";
+        User user = new User("TEST", "1234","kim", "kimyongjun@email.com");
+        assertSame()(user, HttpRequestUtils.setUser(queryString));//객체참조값이 같아야 한다. 객체의 데이터 값이 같다고 같은게 아니다...
+    }
+    */
     @Test
     public void getUrl() {
         assertEquals("/index.html", HttpRequestUtils.getUrl("GET /index.html HTTP/1.1"));

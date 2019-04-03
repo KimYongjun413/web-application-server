@@ -6,8 +6,22 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import model.User;
 
 public class HttpRequestUtils {
+
+    public static User setUser(String firstLine) {
+        firstLine = firstLine.split(" ")[1];
+        int index = firstLine.indexOf("?");
+        //String requestPath = firstLine.substring(0, index);
+        String params = firstLine.substring(index+1);
+        Map<String, String> parameters = HttpRequestUtils.parseQueryString(params);
+        String userId = parameters.get("userId");
+        String password = parameters.get("password");
+        String name = parameters.get("name");
+        String email = parameters.get("email");
+        return new User(userId,password,name,email);
+    }
 
     public static String getUrl (String firstLine) {
         String[] url = firstLine.split(" ");

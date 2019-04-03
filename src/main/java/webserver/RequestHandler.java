@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
@@ -23,18 +24,26 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
-            // 요구사항 1 - index.html 응답하기
-            // http://localhost:8080/index.html로 접속했을 때 webapp 디렉토리의 index.html 파일을 읽어 클라이언트에 응답한다.
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
             String line = bufferedReader.readLine();
-            String url = HttpRequestUtils.getUrl(line);
-            byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
 
+            String url = HttpRequestUtils.getUrl(line);
+            int index = url.indexOf("?");
+            url = url.substring(0, index);
+            if(url.equals("/user/create"))
+            {
+                User user = HttpRequestUtils.setUser(line);
+                log.debug("{}", user);
+            }
+            /*
             while(line != null && !"".equals(line)) {
                 log.debug("{}",line);
                 line = bufferedReader.readLine();
             }
+            */
 
+
+            byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);
