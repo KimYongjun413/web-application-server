@@ -15,7 +15,12 @@
 * 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
-* 
+* 잊지말자 상대경로! ( ./ = 현재 디렉토리 참조, ../ = 현재 디렉토리의 부모 디렉토리 참조)
+* The try-with-resources Statement ( try( ) { } )<br>InputStream, OutputStream 은 Closeable 인터페이스를 사용하고 있어서
+    () 안에 생성하게되면 try가 끝나고 따로 메모리를 해제하지 않아도 해제가 된다!(자바7부터 들어있는 기능)<br>
+    참고 : https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html
+* InputStream을 BufferedReader로 바꾸는 법<br>
+  BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
 
 ### 요구사항 2 - get 방식으로 회원가입
 * 
