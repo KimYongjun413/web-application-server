@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import model.User;
 import org.junit.Test;
@@ -18,10 +19,10 @@ public class HttpRequestUtilsTest {
         String queryString = "GET /user/create?userId=TEST&password=1234&name=kim&email=kimyongjun@email.com HTTP/1.1";
         //같은 상태값을 가진 객체들이어도 참조값이 다르기 때문에 assertEqualssms failed를 반환한다.
         User user = new User("TEST", "1234","kim", "kimyongjun@email.com");
-        User user2 = new User("TEST", "1234","kim", "kimyongjun@email.com");
-        User user3 = HttpRequestUtils.setUser(queryString);
-        //assertEquals(user,user2);
-        //assertEquals(user,user3);
+        User user2 = HttpRequestUtils.setUser(queryString);
+
+        assertEquals(user.toString(),user2.toString());
+        //assertTrue(Objects.equals(user,user2));
 
 
     }
