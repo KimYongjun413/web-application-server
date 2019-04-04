@@ -23,7 +23,12 @@
   BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"UTF-8"));
 
 ### 요구사항 2 - get 방식으로 회원가입
-* 
+* Map, HasMap<br>
+  참고 : https://wikidocs.net/208
+  https://onsil-thegreenhouse.github.io/programming/java/2018/02/22/java_tutorial_1-24/
+* String [] url2 = url.split("?"); 은 왜 안될까??<br>
+  정규표현식의 특수문자로 '?' 가 쓰이기 때문에 문자로써 인식을 시켜야 구분자로써 사용할 수 있다.
+  이스케이프 처리를 하여 다음과 같이 하면 된다.<br> String [] url2 = url.split("\\?");
 
 ### 요구사항 3 - post 방식으로 회원가입
 * 

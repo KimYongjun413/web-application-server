@@ -12,14 +12,20 @@ import util.HttpRequestUtils.Pair;
 
 public class HttpRequestUtilsTest {
 
-    /*
+
     @Test
     public void setUser() {
         String queryString = "GET /user/create?userId=TEST&password=1234&name=kim&email=kimyongjun@email.com HTTP/1.1";
+        //같은 상태값을 가진 객체들이어도 참조값이 다르기 때문에 assertEqualssms failed를 반환한다.
         User user = new User("TEST", "1234","kim", "kimyongjun@email.com");
-        assertSame()(user, HttpRequestUtils.setUser(queryString));//객체참조값이 같아야 한다. 객체의 데이터 값이 같다고 같은게 아니다...
+        User user2 = new User("TEST", "1234","kim", "kimyongjun@email.com");
+        User user3 = HttpRequestUtils.setUser(queryString);
+        //assertEquals(user,user2);
+        //assertEquals(user,user3);
+
+
     }
-    */
+
     @Test
     public void getUrl() {
         assertEquals("/index.html", HttpRequestUtils.getUrl("GET /index.html HTTP/1.1"));
