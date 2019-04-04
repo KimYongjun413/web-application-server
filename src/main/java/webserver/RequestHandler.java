@@ -28,20 +28,25 @@ public class RequestHandler extends Thread {
             String line = bufferedReader.readLine();
 
             String url = HttpRequestUtils.getUrl(line);
-            int index = url.indexOf("?");
-            url = url.substring(0, index);
-            if(url.equals("/user/create"))
+            if(url.equals("/index.html")) {
+                while(line != null && !"".equals(line)) {
+                    log.debug("{}",line);
+                    line = bufferedReader.readLine();
+                }
+            }
+            else if(url.equals("/user/form.html"))
             {
-                User user = HttpRequestUtils.setUser(line);
-                log.debug("{}", user);
-            }
-            /*
-            while(line != null && !"".equals(line)) {
-                log.debug("{}",line);
-                line = bufferedReader.readLine();
-            }
-            */
 
+            }
+            else {
+                int index = url.indexOf("?");
+                url = url.substring(0, index);
+                if (url.equals("/user/create")) {
+                    User user = HttpRequestUtils.setUser(line);
+                    log.debug("{}", user);
+                    url = "/index.html";
+                }
+            }
 
             byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
             DataOutputStream dos = new DataOutputStream(out);
