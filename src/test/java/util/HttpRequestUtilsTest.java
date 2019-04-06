@@ -13,6 +13,14 @@ import util.HttpRequestUtils.Pair;
 
 public class HttpRequestUtilsTest {
 
+    @Test
+    public void setUserByPost() {
+        String queryString = "userId=TEST&password=1234&name=kim&email=kimyongjun@email.com";
+        User user = new User("TEST", "1234","kim", "kimyongjun@email.com");
+        User user2 = HttpRequestUtils.setUserByPost(queryString);
+
+        assertEquals(user.toString(),user2.toString());
+    }
 
     @Test
     public void setUser() {

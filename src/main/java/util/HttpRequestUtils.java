@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,23 @@ public class HttpRequestUtils {
         //String requestPath = firstLine.substring(0, index);
         String params = firstLine.substring(index+1);
         Map<String, String> parameters = HttpRequestUtils.parseQueryString(params);
+        String userId = parameters.get("userId");
+        String password = parameters.get("password");
+        String name = parameters.get("name");
+        String email = parameters.get("email");
+        return new User(userId,password,name,email);
+    }
+
+    public static User setUserByPost(String body) {
+
+        String[] params = body.split("&");
+        Map<String, String> parameters = new HashMap<>();
+
+        for(int i = 0 ; i < params.length; i++) {
+            String[] tokens = params[i].split("=");
+            parameters.put(tokens[0],tokens[1]);
+        }
+
         String userId = parameters.get("userId");
         String password = parameters.get("password");
         String name = parameters.get("name");
