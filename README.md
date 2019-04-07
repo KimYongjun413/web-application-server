@@ -31,7 +31,9 @@
   이스케이프 처리를 하여 다음과 같이 하면 된다.<br> String [] url2 = url.split("\\?");
 
 ### 요구사항 3 - post 방식으로 회원가입
-* 
+* POST 방식이란? - 
+* POST로 데이터를 전달할 경우 전달하는 데이터는 HTTP 본문에 담긴다.
+* 본문의 길이는 HTTP 헤더의 Content-Length의 값이다.
 
 ### 요구사항 4 - redirect 방식으로 이동
 * 
