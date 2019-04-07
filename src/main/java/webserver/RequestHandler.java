@@ -38,16 +38,23 @@ public class RequestHandler extends Thread {
                     log.debug("{}",line);
                     line = bufferedReader.readLine();
                 }
+
+                byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
+                DataOutputStream dos = new DataOutputStream(out);
+                response200Header(dos, body.length);
+                responseBody(dos, body);
+
             } else if(url.equals("/user/form.html")) {
 
+                while(line != null && !"".equals(line)) {
+                    log.debug("{}",line);
+                    line = bufferedReader.readLine();
+                }
+                byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
+                DataOutputStream dos = new DataOutputStream(out);
+                response200Header(dos, body.length);
+                responseBody(dos, body);
             } else{
-//                int index = url.indexOf("?");
-//                url = url.substring(0, index);
-//                if (url.equals("/user/create")) {
-//                    User user = HttpRequestUtils.setUser(line);
-//                    log.debug("{}", user);
-//                    url = "/index.html";
-//                }
                 while(line != null && !"".equals(line)) {
                     String headerLine[] = line.split(":");
                     if(headerLine.length > 1) {
@@ -55,20 +62,20 @@ public class RequestHandler extends Thread {
                         headerMap.put(headerLine[0], headerLine[1]);
                     }
                     line = bufferedReader.readLine();
+
                 }
 
-                String body = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
-                log.debug(body);
+                String postBody = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
+                log.debug(postBody);
 
-                User user = HttpRequestUtils.setUserByPost(body);
+                User user = HttpRequestUtils.setUserByPost(postBody);
                 log.debug(String.valueOf(user));
 
+                DataOutputStream dos = new DataOutputStream(out);
+                response302Header(dos);
             }
 
-            byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
-            DataOutputStream dos = new DataOutputStream(out);
-            response200Header(dos, body.length);
-            responseBody(dos, body);
+
 
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -80,6 +87,16 @@ public class RequestHandler extends Thread {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: /index.html \r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
