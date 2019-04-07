@@ -31,12 +31,15 @@
   이스케이프 처리를 하여 다음과 같이 하면 된다.<br> String [] url2 = url.split("\\?");
 
 ### 요구사항 3 - post 방식으로 회원가입
-* POST 방식이란? - 
 * POST로 데이터를 전달할 경우 전달하는 데이터는 HTTP 본문에 담긴다.
 * 본문의 길이는 HTTP 헤더의 Content-Length의 값이다.
 
 ### 요구사항 4 - redirect 방식으로 이동
-* 
+* [List of HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes, "List of HTTP status codes")
+* [HTTP 302 status code](https://en.wikipedia.org/wiki/HTTP_302, "HTTP 302 status code")<br>
+ 302 리다이렉트의 의미는 요청한 리소스가 임시적으로 새로운 URL로 이동했음(Temporarily Moved)을 나타낸다.
+  
+  
 
 ### 요구사항 5 - cookie
 * 
