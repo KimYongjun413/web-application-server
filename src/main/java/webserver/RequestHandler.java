@@ -3,9 +3,7 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SplittableRandom;
+import java.util.*;
 
 import db.DataBase;
 import model.User;
@@ -75,6 +73,45 @@ public class RequestHandler extends Thread {
                     DataOutputStream dos = new DataOutputStream(out);
                     response200Header(dos, body.length);
                     responseBody(dos, body);
+                } else if (url.equals("/user/list.html")) {
+
+                    boolean isLogin = false;
+                    // 사용자가 "로그인" 상태인지 판단
+                    while (line != null && !"".equals(line)) {
+                        if(line.contains("logined=true")) {
+                            isLogin = true;
+                        }
+                        line = bufferedReader.readLine();
+                    }
+
+                    if(isLogin) {
+                        // 사용자 목록 가져오기
+                        Collection<User> allUser = DataBase.findAll();
+
+                        // StringBuilder를 활용해 사용자 목록을 출력하는 HTML을 동적으로 생성한 후 응답으로 보낸다.
+                        StringBuilder sbHtml = new StringBuilder();
+                        sbHtml.append("<table>");
+                        for(User user : allUser)
+                        {
+                            sbHtml.append("<tr>");
+                            sbHtml.append("<td>").append(user.getUserId()).append("</td>");
+                            sbHtml.append("<td>").append(user.getName()).append("</td>");
+                            sbHtml.append("<td>").append(user.getEmail()).append("</td>");
+                            sbHtml.append("</tr>");
+                        }
+                        sbHtml.append("</table>");
+
+                        byte[] body = sbHtml.toString().getBytes();
+                        DataOutputStream dos = new DataOutputStream(out);
+                        response200Header(dos, body.length);
+                        responseBody(dos, body);
+                    }else {
+                        url = "user/login.html";
+                        byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                        DataOutputStream dos = new DataOutputStream(out);
+                        response200Header(dos, body.length);
+                        responseBody(dos, body);
+                    }
                 }
             } else {
                 String token = line.split(" ")[1];
