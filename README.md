@@ -42,7 +42,13 @@
   
 
 ### 요구사항 5 - cookie
-* 
+* [HTTP 쿠키](https://developer.mozilla.org/ko/docs/Web/HTTP/Cookies, "HTTP 쿠키")
+  
+* 쿠키값은 어떻게 생성하나?<br>
+  응답 헤더에 Set-cookie를 추가해주면 된다!!<br>
+  
+* 생성된 쿠키는 어디서 봐야 하는 것일까?<br>
+참고 : https://ledgku.tistory.com/72
 
 ### 요구사항 6 - stylesheet 적용
 * 

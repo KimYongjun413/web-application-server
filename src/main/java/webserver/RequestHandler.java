@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SplittableRandom;
 
+import db.DataBase;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,55 +29,101 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in,"UTF-8"));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line = bufferedReader.readLine();
 
             Map<String, String> headerMap = new HashMap<>();
-            String url = HttpRequestUtils.getUrl(line);
-            if(url.equals("/index.html")) {
-                while(line != null && !"".equals(line)) {
-                    log.debug("{}",line);
-                    line = bufferedReader.readLine();
-                }
-
-                byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
-                DataOutputStream dos = new DataOutputStream(out);
-                response200Header(dos, body.length);
-                responseBody(dos, body);
-
-            } else if(url.equals("/user/form.html")) {
-
-                while(line != null && !"".equals(line)) {
-                    log.debug("{}",line);
-                    line = bufferedReader.readLine();
-                }
-                byte[] body = Files.readAllBytes(new File("./webapp" + url ).toPath());
-                DataOutputStream dos = new DataOutputStream(out);
-                response200Header(dos, body.length);
-                responseBody(dos, body);
-            } else{
-                while(line != null && !"".equals(line)) {
-                    String headerLine[] = line.split(":");
-                    if(headerLine.length > 1) {
-                        log.debug("{} : {}",headerLine[0] , headerLine[1]);
-                        headerMap.put(headerLine[0], headerLine[1]);
+            String requstType = line.split(" ")[0];
+            if (requstType.equals("GET")) {
+                String url = HttpRequestUtils.getUrl(line);
+                if (url.equals("/index.html")) {
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
                     }
-                    line = bufferedReader.readLine();
 
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
+
+                } else if (url.equals("/user/form.html")) {
+
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
+                    }
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
+                } else if (url.equals("/user/login.html")) {
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
+                    }
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
+                } else if (url.equals("/user/login_failed.html")) {
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
+                    }
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
                 }
+            } else {
+                String token = line.split(" ")[1];
+                if (token.equals("/user/login")) {
+                    while (line != null && !"".equals(line)) {
+                        String headerLine[] = line.split(":");
+                        if (headerLine.length > 1) {
+                            log.debug("{} : {}", headerLine[0], headerLine[1]);
+                            headerMap.put(headerLine[0], headerLine[1]);
+                        }
+                        line = bufferedReader.readLine();
+                    }
+                    String postBody = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
+                    log.debug(postBody);
 
-                String postBody = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
-                log.debug(postBody);
+                    Map<String,String> parameters = HttpRequestUtils.parseQueryString(postBody);
+                    User loginUser = DataBase.findUserById(parameters.get("userId"));
+                    if(loginUser != null &&  loginUser.getPassword().equals(parameters.get("password"))) {
+                        log.debug("Login 성공!!!!");
+                        DataOutputStream dos = new DataOutputStream(out);
+                        responseLoginHeader(dos, "logined=true");
+                    }else {
+                        log.debug("Login 실패(아이디 입력 안하거나 아이디 혹은 비밀번호가 다름)");
+                        DataOutputStream dos = new DataOutputStream(out);
+                        responseLoginHeader(dos, "logined=false");
+                    }
 
-                User user = HttpRequestUtils.setUserByPost(postBody);
-                log.debug(String.valueOf(user));
 
-                DataOutputStream dos = new DataOutputStream(out);
-                response302Header(dos);
+                } else {
+
+                    while (line != null && !"".equals(line)) {
+                        String headerLine[] = line.split(":");
+                        if (headerLine.length > 1) {
+                            log.debug("{} : {}", headerLine[0], headerLine[1]);
+                            headerMap.put(headerLine[0], headerLine[1]);
+                        }
+                        line = bufferedReader.readLine();
+                    }
+                    String postBody = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
+                    log.debug(postBody);
+                    User user = HttpRequestUtils.setUserByPost(postBody);
+                    log.debug(String.valueOf(user));
+
+                    DataBase.addUser(user);
+
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response302Header(dos);
+                }
             }
-
-
-
         } catch (IOException e) {
             log.error(e.getMessage());
         }
