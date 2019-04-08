@@ -201,6 +201,23 @@ public class RequestHandler extends Thread {
         }
     }
 
+    private void responseLoginHeader(DataOutputStream dos, String cookie) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Set-Cookie: " + cookie + " \r\n");
+            if(cookie.equals("logined=true")) {
+                dos.writeBytes("Location: /index.html \r\n");
+            }
+            else {
+                dos.writeBytes("Location: /user/login_failed.html \r\n");
+            }
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
     private void response302Header(DataOutputStream dos) {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
