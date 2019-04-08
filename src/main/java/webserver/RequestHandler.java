@@ -84,7 +84,7 @@ public class RequestHandler extends Thread {
                         line = bufferedReader.readLine();
                     }
 
-                    if(isLogin) {
+                     if(isLogin) {
                         // 사용자 목록 가져오기
                         Collection<User> allUser = DataBase.findAll();
 
@@ -113,6 +113,20 @@ public class RequestHandler extends Thread {
                         responseBody(dos, body);
                     }
                 }
+                else if(url.contains(".css")) {
+
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
+                    }
+
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    responseCSSHeader(dos, body.length);
+                    responseBody(dos, body);
+
+                }
+
             } else {
                 String token = line.split(" ")[1];
                 if (token.equals("/user/login")) {
@@ -170,6 +184,16 @@ public class RequestHandler extends Thread {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+    private void responseCSSHeader(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
