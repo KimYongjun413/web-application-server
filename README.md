@@ -51,7 +51,16 @@
 참고 : https://ledgku.tistory.com/72
 
 ### 요구사항 6 - stylesheet 적용
-* 
+* [Content-Type 이란?](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Content-Type "Content-Type")
+
+### 요구사항 7번까지 완료하면서...
+* 방법이 맞던 틀리던 요구 사항대로 개발하려고 노력을 했습니다. 그 중 가장 생소하고 고민을 많이 한 부분이
+요청과 응답을 주고 받는 과정이었습니다.<br>
+* [HTTP 메시지(요청,응답 헤더 설명)](https://developer.mozilla.org/ko/docs/Web/HTTP/Messages#HTTP_%EC%9D%91%EB%8B%B5 "HTTP 메시지")을 보고 개념을 잡았습니다.
+구글 신의 도움을 받아 힌트를 사용해 요구 사항을 진행할 수 있었는데요... 기능 중심으로 빠르게 구현해보려 한 거라 잘못된 게 얼마나 많을지 상상도 안됩니다.
+* 하지만 래팩토링과 단위 테스트에 중점을 두어 수정을 하다 보면 재밌는 부분들이 많을 것 같아
+기대가 됩니다!!
+* 요구사항 개발 과정을 정리한 블로그는 포스팅되는 대로 이곳에 업데이트하겠습니다.
 
 ### heroku 서버에 배포 후
 * 
