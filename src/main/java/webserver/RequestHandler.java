@@ -33,66 +33,28 @@ public class RequestHandler extends Thread {
             Map<String, String> headerMap = new HashMap<>();
             String requstType = line.split(" ")[0];
             if (requstType.equals("GET")) {
+
                 String url = HttpRequestUtils.getUrl(line);
-                if (url.equals("/index.html")) {
-                    while (line != null && !"".equals(line)) {
-                        log.debug("{}", line);
-                        line = bufferedReader.readLine();
-                    }
 
-                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
-                    DataOutputStream dos = new DataOutputStream(out);
-                    response200Header(dos, body.length);
-                    responseBody(dos, body);
-
-                } else if (url.equals("/user/form.html")) {
-
-                    while (line != null && !"".equals(line)) {
-                        log.debug("{}", line);
-                        line = bufferedReader.readLine();
-                    }
-                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
-                    DataOutputStream dos = new DataOutputStream(out);
-                    response200Header(dos, body.length);
-                    responseBody(dos, body);
-                } else if (url.equals("/user/login.html")) {
-                    while (line != null && !"".equals(line)) {
-                        log.debug("{}", line);
-                        line = bufferedReader.readLine();
-                    }
-                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
-                    DataOutputStream dos = new DataOutputStream(out);
-                    response200Header(dos, body.length);
-                    responseBody(dos, body);
-                } else if (url.equals("/user/login_failed.html")) {
-                    while (line != null && !"".equals(line)) {
-                        log.debug("{}", line);
-                        line = bufferedReader.readLine();
-                    }
-                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
-                    DataOutputStream dos = new DataOutputStream(out);
-                    response200Header(dos, body.length);
-                    responseBody(dos, body);
-                } else if (url.equals("/user/list.html")) {
+                if (url.equals("/user/list.html")) {
 
                     boolean isLogin = false;
                     // 사용자가 "로그인" 상태인지 판단
                     while (line != null && !"".equals(line)) {
-                        if(line.contains("logined=true")) {
+                        if (line.contains("logined=true")) {
                             isLogin = true;
                         }
                         line = bufferedReader.readLine();
                     }
 
-                     if(isLogin) {
+                    if (isLogin) {
                         // 사용자 목록 가져오기
                         Collection<User> allUser = DataBase.findAll();
 
                         // StringBuilder를 활용해 사용자 목록을 출력하는 HTML을 동적으로 생성한 후 응답으로 보낸다.
                         StringBuilder sbHtml = new StringBuilder();
                         sbHtml.append("<table>");
-                        for(User user : allUser)
-                        {
+                        for (User user : allUser) {
                             sbHtml.append("<tr>");
                             sbHtml.append("<td>").append(user.getUserId()).append("</td>");
                             sbHtml.append("<td>").append(user.getName()).append("</td>");
@@ -105,15 +67,14 @@ public class RequestHandler extends Thread {
                         DataOutputStream dos = new DataOutputStream(out);
                         response200Header(dos, body.length);
                         responseBody(dos, body);
-                    }else {
+                    } else {
                         url = "user/login.html";
                         byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
                         DataOutputStream dos = new DataOutputStream(out);
                         response200Header(dos, body.length);
                         responseBody(dos, body);
                     }
-                }
-                else if(url.contains(".css")) {
+                } else if (url.contains(".css")) {
 
                     while (line != null && !"".equals(line)) {
                         log.debug("{}", line);
@@ -125,7 +86,20 @@ public class RequestHandler extends Thread {
                     responseCSSHeader(dos, body.length);
                     responseBody(dos, body);
 
+                } else {
+
+
+                    while (line != null && !"".equals(line)) {
+                        log.debug("{}", line);
+                        line = bufferedReader.readLine();
+                    }
+
+                    byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
                 }
+
 
             } else {
                 String token = line.split(" ")[1];
@@ -141,13 +115,13 @@ public class RequestHandler extends Thread {
                     String postBody = IOUtils.readData(bufferedReader, Integer.parseInt(headerMap.get("Content-Length").trim()));
                     log.debug(postBody);
 
-                    Map<String,String> parameters = HttpRequestUtils.parseQueryString(postBody);
+                    Map<String, String> parameters = HttpRequestUtils.parseQueryString(postBody);
                     User loginUser = DataBase.findUserById(parameters.get("userId"));
-                    if(loginUser != null &&  loginUser.getPassword().equals(parameters.get("password"))) {
+                    if (loginUser != null && loginUser.getPassword().equals(parameters.get("password"))) {
                         log.debug("Login 성공!!!!");
                         DataOutputStream dos = new DataOutputStream(out);
                         responseLoginHeader(dos, "logined=true");
-                    }else {
+                    } else {
                         log.debug("Login 실패(아이디 입력 안하거나 아이디 혹은 비밀번호가 다름)");
                         DataOutputStream dos = new DataOutputStream(out);
                         responseLoginHeader(dos, "logined=false");
@@ -190,6 +164,7 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+
     private void responseCSSHeader(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
@@ -206,10 +181,9 @@ public class RequestHandler extends Thread {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Set-Cookie: " + cookie + " \r\n");
-            if(cookie.equals("logined=true")) {
+            if (cookie.equals("logined=true")) {
                 dos.writeBytes("Location: /index.html \r\n");
-            }
-            else {
+            } else {
                 dos.writeBytes("Location: /user/login_failed.html \r\n");
             }
             dos.writeBytes("\r\n");
