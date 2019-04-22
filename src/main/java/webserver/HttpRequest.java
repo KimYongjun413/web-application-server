@@ -1,5 +1,8 @@
 package webserver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import util.HttpRequestUtils;
 import util.IOUtils;
 
@@ -8,28 +11,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequest {
+    private static final Logger log = LoggerFactory.getLogger(HttpResponse.class);
 
+    private HttpMethod httpMethod;
     private String method;
     private String path;
-    Map<String, String> headerMap = new HashMap<>();
-    Map<String, String> parameterMap = new HashMap<>();
+    Map<String, String> headers = new HashMap<>();
+    Map<String, String> params = new HashMap<>();
 
     public HttpRequest(InputStream in) {
-
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = bufferedReader.readLine();
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String line = br.readLine();
+            if(line == null) {
+                return;
+            }
 
             setMethod(line);
-
             setPath(line);
             setGetParameter(line);
 
-            line = bufferedReader.readLine();
+            line = br.readLine();
 
-            setHeader(line, bufferedReader);
-
-            setPostParameter(line, bufferedReader);
+            setHeader(line, br);
+            setPostParameter(line, br);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,7 +48,8 @@ public class HttpRequest {
 
     private void setPath(String line) {
         String[] pathSplitted = line.split(" ");
-        if(getMethod().equals("POST")) {
+        httpMethod = HttpMethod.valueOf(getMethod());
+        if(httpMethod.isPost()) {
             this.path = pathSplitted[1];
             return;
         }
@@ -60,7 +66,7 @@ public class HttpRequest {
     private void setHeader(String line, BufferedReader br) {
         while(line != null && !line.equals("")) {
             String[] headerSplitted = line.split(":");
-            this.headerMap.put(headerSplitted[0].trim(), headerSplitted[1].trim());
+            this.headers.put(headerSplitted[0].trim(), headerSplitted[1].trim());
             try {
                 line = br.readLine();
             } catch (IOException e) {
@@ -73,15 +79,16 @@ public class HttpRequest {
         String[] pathSplitted = line.split(" ");
         int index = pathSplitted[1].indexOf("?");
         if( index > -1) {
-            parameterMap = HttpRequestUtils.parseQueryString((pathSplitted[1].substring(index+1)));
+            params = HttpRequestUtils.parseQueryString((pathSplitted[1].substring(index+1)));
         }
     }
 
     private void setPostParameter(String line, BufferedReader br) {
         try {
-            if(!getMethod().equals("POST")) return;
-            String body = IOUtils.readData(br, Integer.parseInt(headerMap.get("Content-Length")));
-            this.parameterMap = HttpRequestUtils.parseQueryString(body);
+            httpMethod = HttpMethod.valueOf(getMethod());
+            if(!httpMethod.isPost()) return;
+            String body = IOUtils.readData(br, Integer.parseInt(headers.get("Content-Length")));
+            this.params = HttpRequestUtils.parseQueryString(body);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,10 +104,19 @@ public class HttpRequest {
     }
 
     public String getHeader(String connection) {
-        return headerMap.get(connection);
+        return headers.get(connection);
     }
 
     public String getParameter(String userId) {
-        return parameterMap.get(userId);
+        return params.get(userId);
+    }
+
+    public enum HttpMethod {
+        GET,
+        POST;
+
+        public boolean isPost() {
+            return this == POST;
+        }
     }
 }
